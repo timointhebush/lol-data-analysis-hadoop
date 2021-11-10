@@ -10,7 +10,7 @@ headers = {
     "Accept-Language": "ko,en;q=0.9,en-US;q=0.8",
     "Accept-Charset": "application/x-www-form-urlencoded; charset=UTF-8",
     "Origin": "https://developer.riotgames.com",
-    "X-Riot-Token": "RGAPI-04da3595-378f-40c6-8d1f-3123e50a72b0",
+    "X-Riot-Token": "",
 }
 
 store_path = "./silver/timelines"
