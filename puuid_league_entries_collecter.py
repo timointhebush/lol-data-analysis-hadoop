@@ -4,51 +4,64 @@ import urllib.parse
 import json
 import os
 import time
+import check_path
 
-PUUID_LEAGUE_ENTRIES_URL = "https://kr.api.riotgames.com/lol/summoner/v4/summoners/"
-headers = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.54 Safari/537.36 Edg/95.0.1020.30",
-    "Accept-Language": "ko,en;q=0.9,en-US;q=0.8",
-    "Accept-Charset": "application/x-www-form-urlencoded; charset=UTF-8",
-    "Origin": "https://developer.riotgames.com",
-    "X-Riot-Token": "",
-}
-base_store_path = "./silver/league_entries_puuid"
-try:
-    if not os.path.exists(base_store_path):
-        os.makedirs(base_store_path)
-except OSError:
-    print("Error: Failed to create the directory")
 
-num = 0
-# 시간 제한 부분 개선 필요
-with open("./silver/silver_1_page_1.json", "r") as f:
-    silver_1_page_1_json = json.load(f)
-    path = "silver_1_page_puuid_1"
-    page = []
-    for summoner in silver_1_page_1_json:
-        if num == 100:
-            time.sleep(120)
-            num = 0
-        summonerId = summoner["summonerId"]
-        summonerName = summoner["summonerName"]
-        LEAGUE_ENTRIES_URL = PUUID_LEAGUE_ENTRIES_URL + summonerId
-        req = Request(LEAGUE_ENTRIES_URL, headers=headers)
-        try:
-            response = urlopen(req)
-            summoner_puuid = json.loads(response.read().decode("utf-8"))
-            print(summoner_puuid)
-            page += [summoner_puuid]
-            print("Store and Wait")
-            time.sleep(0.05)
-            num += 1
-        except URLError as e:
-            if hasattr(e, "reason"):
-                print("We failed to reach a server.")
-                print("Reason: ", e.reason)
-            elif hasattr(e, "code"):
-                print("The server couldn't fulfill the request.")
-                print("Error code: ", e.code)
-    store_path = base_store_path + "/" + path + ".json"
-    with open(store_path, "w") as outfile:
-        json.dump(page, outfile)
+def collect_puuid_league_entries(tier, headers):
+    """사용자 정보가 담긴 league_entries json을 읽어 사용자 puuid가 담긴 json파일을 불러옵니다.
+
+    Args:
+        tier: ["SILVER", "GOLD", "PLATINUM", "DIAMOND"] 중 하나로서, 사용자의 tier를 의미
+        headers: API호출에 필요한 headers
+    """
+    # puuid league entries를 저장할 경로
+    puuid_league_entries_path = f"./data/{tier}/puuid_league_entries"
+    # league entry들이 저장되어진 경로
+    league_entries_path = f"./data/{tier}/league_entries"
+    # 경로에 폴더가 없다면 생성.
+    check_path.check_path(puuid_league_entries_path)
+    divisions = ["I", "II", "III", "IV"]
+    for division in divisions:
+        league_entries_division_path = league_entries_path + "/" + division
+        puuid_league_entries_division_path = puuid_league_entries_path + "/" + division
+        # league_entries를 저장하면서 생성한 info json파일 load
+        info_json_name = f"./data/{tier}/league_entries/{division}/info/{tier}_{division}_league_entries_info.json"
+        with open(info_json_name, "r") as f:
+            info_json = json.load(f)
+            last_page = info_json["last_page"]
+            f.close()
+        for page in range(1, last_page + 1):
+            # 불러올 league entry json 경로
+            league_entry_json_name = f"{tier}_{division}_page_{page}.json"
+            league_entry_json_path = league_entries_division_path + "/" + league_entry_json_name
+            # puuid가 담길 page
+            page = []
+            with open(league_entry_json_path, "r") as f:
+                league_entry_json = json.load(f)
+                for idx, summoner in enumerate(league_entry_json):
+                    summoner_id = summoner["summonerId"]
+                    PUUID_LEAGUE_ENTRIES_URL = (
+                        f"https://kr.api.riotgames.com/lol/summoner/v4/summoners/{summoner_id}"
+                    )
+                    req = Request(PUUID_LEAGUE_ENTRIES_URL, headers=headers)
+                    try:
+                        response = urlopen(req)
+                        puuid_summoner = json.loads(response.read().decode("utf-8"))
+                        print(f"{tier}_{division}_page_{page}.json의 {idx}번째 ")
+                        page += [puuid_summoner]
+                    except URLError as e:
+                        if hasattr(e, "reason"):
+                            print("We failed to reach a server.")
+                            print("Reason: ", e.reason)
+                            print(f"{page}번의 요청 으로 인해 10초 대기")
+                            time.sleep(12)
+                        elif hasattr(e, "code"):
+                            print("The server couldn't fulfill the request.")
+                            print("Error code: ", e.code)
+                    except:
+                        pass
+                f.close()
+            puuid_league_entries_json_name = f"puuid_{tier}_{division}_page_{page}.json"
+            final_path = puuid_league_entries_division_path + "/" + puuid_league_entries_json_name
+            with open(final_path, "w") as outfile:
+                json.dump(page, outfile)

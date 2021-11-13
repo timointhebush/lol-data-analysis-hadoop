@@ -4,6 +4,32 @@ import urllib.parse
 import json
 import os
 import time
+import check_path
+
+
+def collect_match_id(tier, headers):
+    """ """
+    # puuid league entries들이 저장된 경로
+    puuid_league_entries_path = f"./data/{tier}/puuid_league_entries"
+    # match id들을 저장할 경로
+    match_ids_path = f"./data/{tier}/match_ids"
+    check_path.check_path(match_ids_path)
+    divisions = ["I", "II", "III", "IV"]
+    for division in divisions:
+        puuid_league_entries_division_path = puuid_league_entries_path + "/" + division
+        match_ids_division_path = match_ids_path + "/" + division
+        puuid_league_entries_division_list = os.listdir(puuid_league_entries_division_path)
+        for puuid_json_name in puuid_league_entries_division_list:
+            puuid_league_entry_json_path = (
+                puuid_league_entries_division_path + "/" + puuid_json_name
+            )
+            page = []
+            with open(puuid_league_entry_json_path, "r") as f:
+                puuid_league_entry_json = json.load(f)
+                for idx, summoner in enumerate(puuid_league_entry_json):
+                    puuid = summoner["puuid"]
+                    MATCHID_URL = f"https://asia.api.riotgames.com/lol/match/v5/matches/by-puuid/{puuid}/ids?start=0&count=100"
+
 
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.54 Safari/537.36 Edg/95.0.1020.30",
