@@ -23,59 +23,34 @@ def collect_match_id(tier, headers):
             puuid_league_entry_json_path = (
                 puuid_league_entries_division_path + "/" + puuid_json_name
             )
-            page = []
+            page_list = []
             with open(puuid_league_entry_json_path, "r") as f:
                 puuid_league_entry_json = json.load(f)
                 for idx, summoner in enumerate(puuid_league_entry_json):
                     puuid = summoner["puuid"]
-                    MATCHID_URL = f"https://asia.api.riotgames.com/lol/match/v5/matches/by-puuid/{puuid}/ids?start=0&count=100"
-
-
-headers = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.54 Safari/537.36 Edg/95.0.1020.30",
-    "Accept-Language": "ko,en;q=0.9,en-US;q=0.8",
-    "Accept-Charset": "application/x-www-form-urlencoded; charset=UTF-8",
-    "Origin": "https://developer.riotgames.com",
-    "X-Riot-Token": "",
-}
-matchId_store_path = "./silver/matchIds"
-try:
-    if not os.path.exists(matchId_store_path):
-        os.makedirs(matchId_store_path)
-except OSError:
-    print("Error: Failed to create the directory")
-
-num = 0
-# 시간 제한 부분 개선 필요
-with open("./silver/league_entries_puuid/silver_1_page_puuid_1.json", "r") as f:
-    silver_1_page_puuid_1 = json.load(f)
-    page = []
-    for summoner in silver_1_page_puuid_1:
-        if num == 100:
-            time.sleep(120)
-            num = 0
-        puuid = summoner["puuid"]
-        MATCHID_URL = f"https://asia.api.riotgames.com/lol/match/v5/matches/by-puuid/{puuid}/ids?start=0&count=100"
-        print(MATCHID_URL)
-        req = Request(MATCHID_URL, headers=headers)
-        try:
-            response = urlopen(req)
-            matchIds = json.loads(response.read().decode("utf-8"))
-            print(matchIds)
-            page += matchIds
-            print("Store and Wait")
-            time.sleep(0.05)
-            num += 1
-        except URLError as e:
-            if hasattr(e, "reason"):
-                print("We failed to reach a server.")
-                print("Reason: ", e.reason)
-            elif hasattr(e, "code"):
-                print("The server couldn't fulfill the request.")
-                print("Error code: ", e.code)
-    path = "silver_1_page_matchid_1"
-    store_path = matchId_store_path + "/" + path + ".json"
-    # 중복 게임 제거
-    page = list(set(page))
-    with open(store_path, "w") as outfile:
-        json.dump(page, outfile)
+                    MATCH_ID_URL = f"https://asia.api.riotgames.com/lol/match/v5/matches/by-puuid/{puuid}/ids?start=0&count=100"
+                    req = Request(MATCH_ID_URL, headers=headers)
+                    try:
+                        response = urlopen(req)
+                        match_ids = json.loads(response.read().decode("utf-8"))
+                        print(f"{idx}번째 소환사의 match id를 저장")
+                        page_list += match_ids
+                    except URLError as e:
+                        if hasattr(e, "reason"):
+                            print("We failed to reach a server.")
+                            print("Reason: ", e.reason)
+                            print(f"{page}번의 요청 으로 인해 10초 대기")
+                            time.sleep(12)
+                        elif hasattr(e, "code"):
+                            print("The server couldn't fulfill the request.")
+                            print("Error code: ", e.code)
+                    except:
+                        pass
+                f.close()
+            page = puuid_json_name[-6]
+            match_ids_json_name = f"match_ids_{tier}_{division}_page_{page}.json"
+            final_path = match_ids_division_path + "/" + match_ids_json_name
+            # 중복 게임 제거 후 저장
+            page_list = list(set(page_list))
+            with open(final_path, "w") as outfile:
+                json.dump(page_list, outfile)

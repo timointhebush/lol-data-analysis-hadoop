@@ -35,7 +35,7 @@ def collect_puuid_league_entries(tier, headers):
             league_entry_json_name = f"{tier}_{division}_page_{page}.json"
             league_entry_json_path = league_entries_division_path + "/" + league_entry_json_name
             # puuid가 담길 page
-            page = []
+            page_list = []
             with open(league_entry_json_path, "r") as f:
                 league_entry_json = json.load(f)
                 for idx, summoner in enumerate(league_entry_json):
@@ -48,7 +48,7 @@ def collect_puuid_league_entries(tier, headers):
                         response = urlopen(req)
                         puuid_summoner = json.loads(response.read().decode("utf-8"))
                         print(f"{tier}_{division}_page_{page}.json의 {idx}번째 ")
-                        page += [puuid_summoner]
+                        page_list += [puuid_summoner]
                     except URLError as e:
                         if hasattr(e, "reason"):
                             print("We failed to reach a server.")
