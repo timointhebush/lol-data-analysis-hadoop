@@ -18,7 +18,7 @@ def request_api(URL, headers):
             print("Reason: ", e.reason)
             print(f"api limit보다 많은 요청 으로 인해 10초 대기")
             time.sleep(12)
-            return None
+            raise URLError
         elif hasattr(e, "code"):
             print("The server couldn't fulfill the request.")
             print("Error code: ", e.code)
@@ -27,7 +27,18 @@ def request_api(URL, headers):
         pass
 
 
+def json_generator(json_dict):
+    for idx, data in enumerate(json_dict):
+        yield idx, data
+
+
 def get_json_dict(json_path):
     with open(json_path, "r") as f:
         json_file = json.load(f)
         return json_file
+
+
+def store_json(json_path, data):
+    with open(json_path, "w") as outfile:
+        json.dump(data, outfile)
+        outfile.close()

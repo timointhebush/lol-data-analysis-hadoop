@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from urllib.request import Request, urlopen
 from urllib.error import URLError
 import urllib.parse
@@ -6,7 +8,7 @@ import check_path
 import time
 
 
-def collect_league_entries(tier, headers):
+def collect_league_entries(tier = "SILVER", headers):
     """Riot에서 제공하는 API를 이용하여 특정 tier의 사용자 정보가 담긴 page들을 json파일로 저장합니다.
 
     Args:
