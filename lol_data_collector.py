@@ -1,5 +1,6 @@
 import argparse
 import league_entries_collector
+import puuid_league_entries_collector
 
 
 def define_argparser():
@@ -28,4 +29,5 @@ if __name__ == "__main__":
     args = define_argparser()
     headers = define_headers(args.api_key)
     print(headers["X-Riot-Token"])
-    league_entries_collector.collect_league_entries(args.tier, headers)
+    # league_entries_collector.collect_league_entries(args.tier, headers)
+    puuid_league_entries_collector.collect_puuid_league_entries(args.tier, headers)
