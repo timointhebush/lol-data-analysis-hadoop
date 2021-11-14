@@ -1,5 +1,8 @@
+import os
+
+
 def get_data_path(data_type, tier, division):
-    path = "./data/{tier}/{data_type}/{division}/"
+    path = f"./data/{tier}/{data_type}/{division}/"
     return path
 
 
@@ -26,3 +29,11 @@ def match_json_name(match_id):
 def timeline_json_name(match_id):
     name = f"timeline_{match_id}.json"
     return name
+
+
+def check_path(path):
+    try:
+        if not os.path.exists(path):
+            os.makedirs(path)
+    except OSError:
+        print("Error: Failed to create the directory")
