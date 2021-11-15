@@ -4,6 +4,7 @@ from urllib.error import URLError
 import url, time
 import path as p
 import collector as c
+import os
 
 
 def collect_puuid_league_entries(tier, headers):

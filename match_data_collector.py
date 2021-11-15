@@ -14,7 +14,7 @@ def collect_match_data(tier, headers, data_type):
         match_ids_path = p.get_data_path("match_ids", tier, division)
         data_path = p.get_data_path(data_type, tier, division)
         p.check_path(data_path)
-        file_list = os.listdir(data_path)
+        file_list = os.listdir(match_ids_path)
         for page_num, match_ids_json_name in enumerate(file_list):
             match_ids_json_path = match_ids_path + match_ids_json_name
             match_ids = c.get_json_dict(match_ids_json_path)
@@ -34,6 +34,7 @@ def collect_match_data(tier, headers, data_type):
                     data_json_path = data_path + data_json_name
                     print(data_json_name + " 저장")
                     c.store_json(data_json_path, data)
+                    idx, match_id = next(match_ids_generator)
                 except StopIteration as e:
                     print("마지막")
                     break
