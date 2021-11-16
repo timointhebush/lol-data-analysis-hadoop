@@ -35,5 +35,4 @@ if __name__ == "__main__":
     # league_entries_collector.collect_league_entries(args.tier, headers)
     # puuid_league_entries_collector.collect_puuid_league_entries(args.tier, headers)
     # match_id_collector.collect_match_id(args.tier, headers)
-    match_data_collector.collect_match_data(args.tier, headers, "matches")
-    match_data_collector.collect_match_data(args.tier, headers, "timelines")
+    match_data_collector.collect_match_data(args.tier, headers)
