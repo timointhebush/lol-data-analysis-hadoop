@@ -3,6 +3,7 @@ import os
 
 def get_data_path(data_type, tier, division):
     path = f"./data/{tier}/{data_type}/{division}/"
+    check_path(path)
     return path
 
 
@@ -26,8 +27,18 @@ def match_json_name(match_id):
     return name
 
 
+def match_csv_name(tier, division, ver):
+    name = f"match_{tier}_{division}_{ver}.csv"
+    return name
+
+
 def timeline_json_name(match_id):
     name = f"timeline_{match_id}.json"
+    return name
+
+
+def timeline_csv_name(match_id):
+    name = f"timeline_{match_id}.csv"
     return name
 
 
