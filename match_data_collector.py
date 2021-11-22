@@ -1,5 +1,5 @@
-import path as p
-import collector as c
+from tools import path as p
+from tools import collector as c
 import os, url, time
 from urllib.error import URLError
 

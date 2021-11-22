@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from urllib.error import URLError
-import path as p
-import collector as c
+from tools import path as p
+from tools import collector as c
 import url, time
 
 

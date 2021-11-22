@@ -1,10 +1,11 @@
+import os, random
+
+sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
+from tools import path as p
+from tools import collector as c
+from tools import url
+
 from urllib.error import URLError
-import json
-import os
-import time, url
-import path as p
-import collector as c
-import random
 
 
 def collect_additional_match_id(tier, division, headers):

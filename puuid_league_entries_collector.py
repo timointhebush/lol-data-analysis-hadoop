@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 
 from urllib.error import URLError
-import url, time
-import path as p
-import collector as c
-import os
+import url, time, os
+from tools import path as p
+from tools import collector as c
 
 
 def collect_puuid_league_entries(tier, headers):

@@ -1,9 +1,7 @@
 from urllib.error import URLError
-import json
-import os
-import time, url
-import path as p
-import collector as c
+import json, os, time, url
+from tools import path as p
+from tools import collector as c
 
 
 def collect_match_id(tier, headers):
