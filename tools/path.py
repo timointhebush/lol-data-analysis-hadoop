@@ -9,7 +9,7 @@ def get_data_path(data_type, tier, division):
 
 def get_additional_data_path(data_type, tier, division, last_num):
     path = get_data_path(data_type, tier, division)
-    additional_path = path + last_num + "/"
+    additional_path = path + str(last_num) + "/"
     check_path(additional_path)
     return additional_path
 
