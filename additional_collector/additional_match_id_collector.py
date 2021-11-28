@@ -20,8 +20,17 @@ def collect_additional_match_id(tier, division, headers):
     puuid_path = p.get_data_path("puuid", tier, division)
     # 기존 수집한 match id 저장 경로
     match_ids_decomposed_path = p.get_data_path("match_ids_decomposed", tier, division)
+    # 마지막으로 추가 수집했을 때 저장한 폴더의 번호가 몇번인지 파악.
+    last_request_num = len(os.listdir(match_ids_decomposed_path))
     # puuid 목록 리스트 생성
     puuid_list = os.listdir(puuid_path)
+    # 저장 여부를 판단할 경로와,
+    last_match_ids_path = p.get_additional_data_path(
+        "match_ids_composed", tier, division, last_request_num
+    )
+    new_match_ids_path = p.get_additional_data_path(
+        "match_ids_composed", tier, division, last_request_num + 1
+    )
     #
     for _ in range(len(puuid_list)):
         try:
@@ -43,13 +52,14 @@ def collect_additional_match_id(tier, division, headers):
             elif hasattr(e, "code"):
                 print("The server couldn't fulfill the request.")
                 print("Error code: ", e.code)
+
         # api request를 통해 받은 match id들 중, 이미 수집한 것들을 제거
         for match_id in match_ids:
             # 해당 match id가 존재하는지 확인하기 위한 경로
-            match_id_path = match_ids_decomposed_path + match_id
-            # 해당 경로에 존재하지 않는다면 저장.
-            if not os.path.exists(match_id_path):
-                c.store_json(match_id_path, None)
+            last_match_id_path = last_match_ids_path + match_id
+            # 이전 저장 경로에 존재하지 않는다면 새로운 경로에 저장.
+            if not os.path.exists(last_match_id_path):
+                c.store_json(new_match_ids_path + match_id, None)
                 print(f"{match_id} 저장")
             else:
                 print("이미 존재하는 match id")

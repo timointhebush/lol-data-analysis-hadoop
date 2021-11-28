@@ -7,6 +7,13 @@ def get_data_path(data_type, tier, division):
     return path
 
 
+def get_additional_data_path(data_type, tier, division, last_num):
+    path = get_data_path(data_type, tier, division)
+    additional_path = path + last_num + "/"
+    check_path(additional_path)
+    return additional_path
+
+
 def league_entry_json_name(tier, division, page_num):
     name = f"{tier}_{division}_page_{page_num}.json"
     return name
