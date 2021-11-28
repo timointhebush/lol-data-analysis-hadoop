@@ -7,8 +7,14 @@ def get_data_path(data_type, tier, division):
     return path
 
 
+def get_parent_data_path(data_type, tier, division):
+    path = f"../data/{tier}/{data_type}/{division}/"
+    check_path(path)
+    return path
+
+
 def get_additional_data_path(data_type, tier, division, last_num):
-    path = get_data_path(data_type, tier, division)
+    path = get_parent_data_path(data_type, tier, division)
     additional_path = path + str(last_num) + "/"
     check_path(additional_path)
     return additional_path
