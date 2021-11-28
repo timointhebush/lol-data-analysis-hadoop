@@ -1,4 +1,4 @@
-import os, random
+import os, random, sys, time
 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 from tools import path as p
@@ -17,22 +17,24 @@ def collect_additional_match_id(tier, division, headers):
         headers: API호출에 필요한 headers
     """
     # puuid 저장 경로
-    puuid_path = p.get_data_path("puuid", tier, division)
+    puuid_path = p.get_parent_data_path("puuid", tier, division)
+    print(puuid_path)
     # 기존 수집한 match id 저장 경로
-    match_ids_decomposed_path = p.get_data_path("match_ids_decomposed", tier, division)
+    match_ids_decomposed_path = p.get_parent_data_path("match_ids_decomposed", tier, division)
     # 마지막으로 추가 수집했을 때 저장한 폴더의 번호가 몇번인지 파악.
     last_request_num = len(os.listdir(match_ids_decomposed_path))
     # puuid 목록 리스트 생성
     puuid_list = os.listdir(puuid_path)
-    # 저장 여부를 판단할 경로와,
+    # 저장 여부를 판단할 경로
     last_match_ids_path = p.get_additional_data_path(
-        "match_ids_composed", tier, division, last_request_num
+        "match_ids_decomposed", tier, division, last_request_num
     )
+    # 새로운 match id가 저장될 경로\
     new_match_ids_path = p.get_additional_data_path(
-        "match_ids_composed", tier, division, last_request_num + 1
+        "match_ids_decomposed", tier, division, last_request_num + 1
     )
-    #
-    for _ in range(len(puuid_list)):
+    # 저장되어있는 puuid중 10퍼센트 정도 랜덤으로 추가 수집
+    for _ in range(int(len(puuid_list) * 0.1) + 1):
         try:
             # 요청한 match id를 담을 list
             match_ids = []
@@ -59,10 +61,15 @@ def collect_additional_match_id(tier, division, headers):
             last_match_id_path = last_match_ids_path + match_id
             # 이전 저장 경로에 존재하지 않는다면 새로운 경로에 저장.
             if not os.path.exists(last_match_id_path):
-                c.store_json(new_match_ids_path + match_id, None)
+                new_match_id_path = new_match_ids_path + match_id
+                print(new_match_id_path)
+                c.store_json(new_match_id_path, None)
                 print(f"{match_id} 저장")
             else:
                 print("이미 존재하는 match id")
 
 
-# if __name__ == '__main__':
+if __name__ == "__main__":
+    args = c.define_argparser()
+    headers = c.define_headers(args.api_key)
+    collect_additional_match_id(args.tier, "I", headers)
