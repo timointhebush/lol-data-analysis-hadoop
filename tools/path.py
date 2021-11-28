@@ -40,8 +40,8 @@ def match_json_name(match_id):
     return name
 
 
-def match_csv_name(tier, division, ver):
-    name = f"match_{tier}_{division}_{ver}.csv"
+def match_csv_name(tier, division, last_num):
+    name = f"match_{tier}_{division}_{last_num}.csv"
     return name
 
 
