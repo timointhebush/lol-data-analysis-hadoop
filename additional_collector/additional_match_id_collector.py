@@ -9,15 +9,27 @@ from urllib.error import URLError
 
 
 def collect_additional_match_id(tier, division, headers):
-    """ """
-    puuid_path = p.get_data_path("puuid", tier, division)
-    match_ids_decomposed_path = p.get_data_path("match_ids_decomposed", tier, division)
-    puuid_list = os.listdir(puuid_path)
+    """소환사 puuid로부터 추가적인 match_id들을 수집하기 위한 함수
 
+    Args:
+        tier: ["SILVER", "GOLD", "PLATINUM", "DIAMOND"] 중 하나로서, 사용자의 tier를 의미
+        division: ["I", "II", "III", "IV"] 중 하나,
+        headers: API호출에 필요한 headers
+    """
+    # puuid 저장 경로
+    puuid_path = p.get_data_path("puuid", tier, division)
+    # 기존 수집한 match id 저장 경로
+    match_ids_decomposed_path = p.get_data_path("match_ids_decomposed", tier, division)
+    # puuid 목록 리스트 생성
+    puuid_list = os.listdir(puuid_path)
+    #
     for _ in range(len(puuid_list)):
         try:
+            # 요청한 match id를 담을 list
             match_ids = []
+            # puuid 목록 중 임의로 하나의 puuid를 샘플링
             puuid = random.sample(puuid_list, 1)[0]
+            # 해당 puuid를 통해 api request
             URL = url.match_ids_url(puuid)
             print(URL)
             match_ids = c.request_api(URL, headers)
@@ -31,9 +43,11 @@ def collect_additional_match_id(tier, division, headers):
             elif hasattr(e, "code"):
                 print("The server couldn't fulfill the request.")
                 print("Error code: ", e.code)
-
+        # api request를 통해 받은 match id들 중, 이미 수집한 것들을 제거
         for match_id in match_ids:
+            # 해당 match id가 존재하는지 확인하기 위한 경로
             match_id_path = match_ids_decomposed_path + match_id
+            # 해당 경로에 존재하지 않는다면 저장.
             if not os.path.exists(match_id_path):
                 c.store_json(match_id_path, None)
                 print(f"{match_id} 저장")
