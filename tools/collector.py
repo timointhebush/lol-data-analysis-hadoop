@@ -32,6 +32,7 @@ def define_argparser():
     p = argparse.ArgumentParser(description="수집하고자 하는 티어와 API KEY를 입력하세요")
 
     p.add_argument("--tier", required=True)
+    p.add_argument("--division", required=True)
     p.add_argument("--api_key", required=True)
 
     args = p.parse_args()

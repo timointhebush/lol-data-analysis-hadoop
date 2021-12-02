@@ -86,4 +86,4 @@ def collect_additional_match_data(tier, division, headers):
 if __name__ == "__main__":
     args = c.define_argparser()
     headers = c.define_headers(args.api_key)
-    collect_additional_match_data(args.tier, "I", headers)
+    collect_additional_match_data(args.tier, args.division, headers)
