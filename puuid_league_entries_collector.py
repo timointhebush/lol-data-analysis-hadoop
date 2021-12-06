@@ -4,6 +4,7 @@ from urllib.error import URLError
 import url, time, os
 from tools import path as p
 from tools import collector as c
+from tools import url
 
 
 def collect_puuid_league_entries(tier, headers):
@@ -15,19 +16,27 @@ def collect_puuid_league_entries(tier, headers):
     """
     divisions = ["I", "II", "III", "IV"]
     for division in divisions:
+        # API호출 시 필요한 Summoner ID가 담긴 league entries 경로
         league_entries_path = p.get_data_path("league_entries", tier, division)
+        # puuid가 담긴 league entries를 저장할 경로
         puuid_league_entries_path = p.get_data_path("puuid_league_entries", tier, division)
         p.check_path(puuid_league_entries_path)
+        # league entries가 저장된 경로 파일 리스트
         file_list = os.listdir(league_entries_path)
         for page_num, league_entry_json_name in enumerate(file_list):
+            # league entry를 불러올 최종 경로 생성
             league_entry_json_path = league_entries_path + league_entry_json_name
             print(league_entry_json_path)
+            # 불러오기
             league_entry = c.get_json_dict(league_entry_json_path)
+            # generator를 통해 순차적으로 puuid 저장
             league_entry_generator = c.json_generator(league_entry)
+            # 한 page에 puuid를 담을 리스트
             puuid_page = []
             idx, summoner = next(league_entry_generator)
             while True:
                 try:
+                    # league entry의 summoner ID를 통해 API  호출
                     summoner_id = summoner["summonerId"]
                     URL = url.puuid_league_entries_url(summoner_id)
                     puuid_summoner = c.request_api(URL, headers)
@@ -46,6 +55,7 @@ def collect_puuid_league_entries(tier, headers):
                     elif hasattr(e, "code"):
                         print("The server couldn't fulfill the request.")
                         print("Error code: ", e.code)
+            # 다 모인 puuid list를 저장할 경로
             puuid_league_entry_json_name = p.puuid_league_entry_json_name(
                 tier, division, page_num + 1
             )
