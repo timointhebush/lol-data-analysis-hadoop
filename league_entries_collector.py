@@ -16,21 +16,33 @@ def collect_league_entries(tier, headers):
     """
     divisions = ["II", "III", "IV", "I"]
     for division in divisions:
+        # league entries를 저장할 경로
         league_entries_path = p.get_data_path("league_entries", tier, division)
+        # 해당 경로에 디렉토리가 존재하는지 확인, 없다면 생성
         p.check_path(league_entries_path)
+        # league entries가 담긴 page의 번호
         page_num = 1
         while True:
             try:
+                # API URL
                 URL = url.league_entries_url(tier, division, page_num)
+                # URL과 header를 통해 request
                 league_entry_json = c.request_api(URL, headers)
+
+                # 마지막 page일 경우 종료한다.
                 if len(league_entry_json) == 0:
                     print(f"Page {page_num}에 더 이상 소환사 목록이 없습니다.")
                     break
+
+                # 저장할 JSON 파일 이름 생성
                 league_entry_json_name = p.league_entry_json_name(tier, division, page_num)
+                # 최종 저장 JSON 파일 경로
                 league_entry_json_path = league_entries_path + league_entry_json_name
+                # 저장
                 c.store_json(league_entry_json_path, league_entry_json)
                 page_num += 1
             except URLError as e:
+                # API LIMIT에 걸릴 경우 계속해서 대기한다.
                 if hasattr(e, "reason"):
                     print("We failed to reach a server.")
                     print("Reason: ", e.reason)

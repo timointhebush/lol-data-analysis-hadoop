@@ -5,7 +5,6 @@ from tools import collector as c
 
 
 def collect_match_id(tier, headers):
-    """ """
     divisions = ["I", "II", "III", "IV"]
     for division in divisions:
         puuid_league_entries_path = p.get_data_path("puuid_league_entries", tier, division)

@@ -11,7 +11,10 @@ def collect_match_data(tier, headers):
     """
     divisions = ["I", "II", "III", "IV"]
     for division in divisions:
+        # match id가 저장된 경로
         match_ids_path = p.get_data_path("match_ids", tier, division)
+
+        # match와 timeline을 저장할 경로
         matches_path = p.get_data_path("matches", tier, division)
         timelines_path = p.get_data_path("timelines", tier, division)
         p.check_path(matches_path)
@@ -25,6 +28,7 @@ def collect_match_data(tier, headers):
             while True:
                 try:
                     try:
+                        # match 저장
                         MATCH_URL = url.match_url(match_id)
                         match_json_name = p.match_json_name(match_id)
                         match = c.request_api(MATCH_URL, headers)
@@ -34,6 +38,7 @@ def collect_match_data(tier, headers):
                         print(match_json_path + " 저장")
                         c.store_json(match_json_path, match)
 
+                        # timeline 저장
                         TIMELINE_URL = url.timeline_url(match_id)
                         timeline_json_name = p.timeline_json_name(match_id)
                         timeline = c.request_api(TIMELINE_URL, headers)
