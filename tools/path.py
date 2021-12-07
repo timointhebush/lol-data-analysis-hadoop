@@ -8,9 +8,11 @@ def get_data_path(data_type, tier, division):
 
 
 def get_parent_data_path(data_type, tier, division):
-    path = f"../data/{tier}/{data_type}/{division}/"
-    check_path(path)
-    return path
+    file_dir = os.path.dirname(os.path.realpath(__file__))
+    file_dir = "/".join(file_dir.split("/")[:-1])
+    path = f"/data/{tier}/{data_type}/{division}/"
+    check_path(file_dir + path)
+    return file_dir + path
 
 
 def get_additional_data_path(data_type, tier, division, last_num):
